@@ -32,6 +32,11 @@
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
+        <el-form-item label="文章内容" prop="article_content">
+          <el-select v-model="temp.article_content" multiple class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="文章标签" prop="article_topics">
           <el-select v-model="temp.article_topics" multiple class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
@@ -74,6 +79,7 @@ export default {
         weburl: 'http://localhost/',
         webpassword: 'shenjian.io',
         article_title: '',
+        article_content: '',
         article_categories: [],
         article_topics: []
       },
@@ -126,28 +132,37 @@ export default {
           // 异步单次提交
           async function postArticleAction(info) {
             // 分类列表
-            const categories = new Array()
+            const categories = []
             _self.temp.article_categories.map(cate => {
               categories.push(info[cate])
             })
             // 标签列表
-            const tags = new Array()
+            const tags = []
             _self.temp.article_topics.map(cate => {
               tags.push(info[cate])
             })
             const data = {
               article_title: info[_self.temp.article_title],
+              article_content: info[_self.temp.article_content],
               article_categories: JSON.stringify(categories),
               article_topics: JSON.stringify(tags),
               postStatus: _self.temp.postStatus
             }
             data.__sign = _self.temp.webpassword // password
+            // 同步提交完成
             await postArticle(_self.temp.weburl, data).then((res) => {}).catch((err) => console.log(err))
           }
           // 批量提交数据
           _self.fullscreenLoading = true
-          const p = Promise.all(this.tableData.map(info => postArticleAction(info))).then(val => {console.log('resolve:'+val)}, err => {console.log('reject'+err)}
-          ).finally(() => {
+          Promise.all(this.tableData.map(info => postArticleAction(info))).then(val => { 
+            console.log('resolve:' + val.length)
+            this.$message({
+              message: `提交成功数量:${val.length}`,
+              type: 'success'
+            })
+          }, err => {
+            console.log('reject' + err)
+          }).finally(() => {
             _self.fullscreenLoading = false
           })
         }
