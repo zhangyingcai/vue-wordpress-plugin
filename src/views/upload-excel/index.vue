@@ -4,13 +4,16 @@
     <el-button v-waves class="filter-item" type="primary" @click="handleWordpressArticle">
       导出到文章
     </el-button>
+    <el-button v-waves class="filter-item" type="primary" @click="handleWrodpressCate">
+      导出到分类
+    </el-button>
     <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
       <!-- <el-table-column v-show="tableData.length" type="selection" align="center" /> -->
       <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
     </el-table>
 
-    <el-dialog :visible.sync="dialogFormVisible" title="导出到wordpress文章">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+    <el-dialog :visible.sync="dialogFormVisible" :title="textMap[dialogStatus]">
+      <el-form v-show="dialogStatus==='article'" ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="170px" style="width: auto; margin-left:50px;">
         <el-form-item label="网站首页地址" prop="weburl">
           <el-input v-model="temp.weburl" @blur="webBlur" />
         </el-form-item>
@@ -43,11 +46,39 @@
           </el-select>
         </el-form-item>
       </el-form>
+      <el-form v-show="dialogStatus==='category'" ref="category" :rules="categoryrules" :model="categorytemp" label-position="left" label-width="170px" style="width: auto; margin-left:50px;">
+        <el-form-item label="网站首页地址" prop="weburl">
+          <el-input v-model="categorytemp.weburl" @blur="webBlur" />
+        </el-form-item>
+        <el-form-item label="网站发布密码" prop="webpassword">
+          <el-input v-model="categorytemp.webpassword" type="password" />
+        </el-form-item>
+        <el-form-item label="分类名称" prop="category_name">
+          <el-select v-model="categorytemp.category_name" class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分类描述" prop="category_description">
+          <el-select v-model="categorytemp.category_description" class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分类父级id(必须是数字)" prop="category_parent">
+          <el-select v-model="categorytemp.category_parent" class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分组id(必须是数字)" prop="category_group">
+          <el-select v-model="categorytemp.category_group" class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+      </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           取消
         </el-button>
-        <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" @click="dialogStatus==='article'?articlePublish('dataForm'):updateData()">
+        <el-button v-loading.fullscreen.lock="fullscreenLoading" type="primary" @click="dialogStatus==='article'?articlePublish('dataForm'):categoryPublish('category')">
           确定
         </el-button>
       </div>
@@ -58,7 +89,7 @@
 <script>
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
 import waves from '@/directive/waves' // waves directive
-import { postArticle } from '@/api/tag_auto_post'
+import { postArticle, postCategories } from '@/api/tag_auto_post'
 import { async, resolve, reject } from 'q';
 export default {
   name: 'UploadExcel',
@@ -72,16 +103,29 @@ export default {
       rules: {
         weburl: [{ required: true, message: '网站首页地址必需', trigger: 'blur' }],
         webpassword: [{ required: true, message: '网站发布密码必需', trigger: 'blur' }],
-        postStatus: [{ required: true, message: '发布状态必需', trigger: 'change' }],
         article_title: [{ required: true, message: '文章标题必需', trigger: 'change' }]
+      },
+      categoryrules: {
+        weburl: [{ required: true, message: '网站首页地址必需', trigger: 'blur' }],
+        webpassword: [{ required: true, message: '网站发布密码必需', trigger: 'blur' }],
+        category_name: [{ required: true, message: '分类名称必需', trigger: 'change' }]
       },
       temp: {
         weburl: 'http://localhost/',
         webpassword: 'shenjian.io',
-        article_title: '',
+        article_title: undefined,
         article_content: '',
+        postStatus: 'postStatus',
         article_categories: [],
         article_topics: []
+      },
+      categorytemp: {
+        weburl: 'http://localhost/',
+        webpassword: 'shenjian.io',
+        category_name: undefined,
+        category_description: '',
+        category_parent: '',
+        category_group: ''
       },
       postStatusOptions: [
         {
@@ -94,7 +138,11 @@ export default {
         }
       ],
       dialogStatus: 'article',
-      fullscreenLoading: false
+      fullscreenLoading: false,
+      textMap: {
+        article: '导出到wordpress文章',
+        category: '导出到wordpress分类',
+      }
     }
   },
   methods: {
@@ -121,6 +169,15 @@ export default {
         return
       }
       this.dialogFormVisible = true
+      this.dialogStatus = 'article'
+    },
+    handleWrodpressCate() {
+      if (!this.tableData.length) {
+        this.$message('请先导入数据!')
+        return
+      }
+      this.dialogFormVisible = true
+      this.dialogStatus = 'category'
     },
     webBlur(e) { // 校验当前链接
       console.log(e)
@@ -151,6 +208,38 @@ export default {
             data.__sign = _self.temp.webpassword // password
             // 同步提交完成
             await postArticle(_self.temp.weburl, data).then((res) => {}).catch((err) => console.log(err))
+          }
+          // 批量提交数据
+          _self.fullscreenLoading = true
+          Promise.all(this.tableData.map(info => postArticleAction(info))).then(val => { 
+            console.log('resolve:' + val.length)
+            this.$message({
+              message: `提交成功数量:${val.length}`,
+              type: 'success'
+            })
+          }, err => {
+            console.log('reject' + err)
+          }).finally(() => {
+            _self.fullscreenLoading = false
+          })
+        }
+      })
+    },
+    categoryPublish(formName) { // 文章发布
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const _self = this
+          // 异步单次提交
+          async function postArticleAction(info) {
+            const data = {
+              category_name: info[_self.categorytemp.category_name],
+              category_description: info[_self.categorytemp.category_description],
+              category_parent: info[_self.categorytemp.category_parent],
+              category_group: info[_self.categorytemp.category_group]
+            }
+            data.__sign = _self.categorytemp.webpassword // password
+            // 同步提交完成
+            await postCategories(_self.categorytemp.weburl, data).then((res) => {}).catch((err) => console.log(err))
           }
           // 批量提交数据
           _self.fullscreenLoading = true
