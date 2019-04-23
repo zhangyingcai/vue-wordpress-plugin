@@ -50,6 +50,19 @@ export const constantRouterMap = [
     ]
   },
 
+  // {
+  //   path: 'updateCate',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: '/updateCate',
+  //       name: 'updateCate',
+  //       component: () => import('@/views/updateCate'),
+  //       meta: { title: 'updateCate', icon: 'table' }
+  //     }
+  //   ]
+  // },
+
   { path: '*', redirect: '/404', hidden: true }
 ]
 

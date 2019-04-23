@@ -18,30 +18,30 @@
           <el-input v-model="temp.weburl" @blur="webBlur" />
         </el-form-item>
         <el-form-item label="网站发布密码" prop="webpassword">
-          <el-input v-model="temp.webpassword" type="password" />
+          <el-input v-model="temp.webpassword" />
         </el-form-item>
         <el-form-item label="发布状态" prop="postStatus">
-          <el-select v-model="temp.postStatus" class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.postStatus" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="item in postStatusOptions" :key="item.key" :label="item.display_name" :value="item.key" />
           </el-select>
         </el-form-item>
         <el-form-item label="文章标题" prop="article_title">
-          <el-select v-model="temp.article_title" class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.article_title" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="文章分类" prop="article_categories">
-          <el-select v-model="temp.article_categories" multiple class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.article_categories" clearable multiple class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="文章内容" prop="article_content">
-          <el-select v-model="temp.article_content" multiple class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.article_content" clearable multiple class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="文章标签" prop="article_topics">
-          <el-select v-model="temp.article_topics" multiple class="filter-item" placeholder="Please select">
+          <el-select v-model="temp.article_topics" clearable multiple class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
@@ -51,25 +51,25 @@
           <el-input v-model="categorytemp.weburl" @blur="webBlur" />
         </el-form-item>
         <el-form-item label="网站发布密码" prop="webpassword">
-          <el-input v-model="categorytemp.webpassword" type="password" />
+          <el-input v-model="categorytemp.webpassword" />
         </el-form-item>
         <el-form-item label="分类名称" prop="category_name">
-          <el-select v-model="categorytemp.category_name" class="filter-item" placeholder="Please select">
+          <el-select v-model="categorytemp.category_name" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="分类描述" prop="category_description">
-          <el-select v-model="categorytemp.category_description" class="filter-item" placeholder="Please select">
+          <el-select v-model="categorytemp.category_description" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="分类父级id(必须是数字)" prop="category_parent">
-          <el-select v-model="categorytemp.category_parent" class="filter-item" placeholder="Please select">
+          <el-select v-model="categorytemp.category_parent" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
         <el-form-item label="分组id(必须是数字)" prop="category_group">
-          <el-select v-model="categorytemp.category_group" class="filter-item" placeholder="Please select">
+          <el-select v-model="categorytemp.category_group" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
@@ -245,6 +245,7 @@ export default {
           _self.fullscreenLoading = true
           Promise.all(this.tableData.map(info => postArticleAction(info))).then(val => { 
             console.log('resolve:' + val.length)
+            _self.dialogFormVisible = false
             this.$message({
               message: `提交成功数量:${val.length}`,
               type: 'success'
