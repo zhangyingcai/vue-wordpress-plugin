@@ -73,6 +73,11 @@
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
+        <el-form-item label="分类图片" prop="category_img">
+          <el-select v-model="categorytemp.category_img" clearable class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
@@ -115,7 +120,7 @@ export default {
         webpassword: 'shenjian.io',
         article_title: undefined,
         article_content: '',
-        postStatus: 'postStatus',
+        postStatus: 'publish',
         article_categories: [],
         article_topics: []
       },
@@ -125,7 +130,8 @@ export default {
         category_name: undefined,
         category_description: '',
         category_parent: '',
-        category_group: ''
+        category_group: '',
+        category_img: ''
       },
       postStatusOptions: [
         {
@@ -235,7 +241,8 @@ export default {
               category_name: info[_self.categorytemp.category_name],
               category_description: info[_self.categorytemp.category_description],
               category_parent: info[_self.categorytemp.category_parent],
-              category_group: info[_self.categorytemp.category_group]
+              category_group: info[_self.categorytemp.category_group],
+              category_img: info[_self.categorytemp.category_img],
             }
             data.__sign = _self.categorytemp.webpassword // password
             // 同步提交完成
