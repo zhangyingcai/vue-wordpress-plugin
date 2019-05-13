@@ -63,6 +63,11 @@
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
           </el-select>
         </el-form-item>
+        <el-form-item label="分类别名,用于路由" prop="category_slug">
+          <el-select v-model="categorytemp.category_slug" clearable class="filter-item" placeholder="Please select">
+            <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="分类父级id(必须是数字)" prop="category_parent">
           <el-select v-model="categorytemp.category_parent" clearable class="filter-item" placeholder="Please select">
             <el-option v-for="(item, index) in tableHeader" :key="index" :label="item" :value="item" />
@@ -131,7 +136,8 @@ export default {
         category_description: '',
         category_parent: '',
         category_group: '',
-        category_img: ''
+        category_img: '',
+        category_slug: ''
       },
       postStatusOptions: [
         {
@@ -243,6 +249,7 @@ export default {
               category_parent: info[_self.categorytemp.category_parent],
               category_group: info[_self.categorytemp.category_group],
               category_img: info[_self.categorytemp.category_img],
+              category_slug: info[_self.categorytemp.category_slug]
             }
             data.__sign = _self.categorytemp.webpassword // password
             // 同步提交完成
