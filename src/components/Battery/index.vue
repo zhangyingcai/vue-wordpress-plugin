@@ -37,23 +37,16 @@ export default {
   },
   watch: {
     rate: function(val){
-      this.innerstyle.width = val+'%'
-      if(parseFloat(val) <= 10){
-        this.innerstyle.backgroundColor = 'red' // 红色
-        return
-      }
-      if(parseFloat(val) <= 20){
-        this.innerstyle.backgroundColor = 'yellow' // 黄色
-        return
-      }
-      this.innerstyle.backgroundColor = 'gray' // 灰色
+      this.matchRate(val)
     }
   },
   created() {
-    
+    this.matchRate()
   },
   methods: {
     matchRate(val) {
+      let _val = val || 0
+      this.innerstyle.width = `${val}%`
       if(parseFloat(val) <= 10){
         this.innerstyle.backgroundColor = 'red' // 红色
         return
