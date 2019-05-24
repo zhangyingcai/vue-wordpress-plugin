@@ -1,11 +1,15 @@
 <template>
   <div class="app-container">
     <upload-excel-component :on-success="handleSuccess" :before-upload="beforeUpload" class="mb-2" />
-    <el-button v-waves class="filter-item" type="primary" @click="handleWordpressArticle">
+    <el-button class="filter-item" type="primary" @click="handleWordpressArticle">
       导出到文章
     </el-button>
-    <el-button v-waves class="filter-item" type="primary" @click="handleWrodpressCate">
+    <el-button class="filter-item" type="primary" @click="handleWrodpressCate">
       导出到分类
+    </el-button>
+    <Battery :rate="Battery"></Battery>
+    <el-button class="filter-item" type="primary" @click="addBattery">
+      电量增加
     </el-button>
     <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
       <!-- <el-table-column v-show="tableData.length" type="selection" align="center" /> -->
@@ -98,12 +102,13 @@
 
 <script>
 import UploadExcelComponent from '@/components/UploadExcel/index.vue'
+import Battery from '@/components/Battery/index.vue'
 import waves from '@/directive/waves' // waves directive
 import { postArticle, postCategories } from '@/api/tag_auto_post'
 import { async, resolve, reject } from 'q';
 export default {
   name: 'UploadExcel',
-  components: { UploadExcelComponent },
+  components: { UploadExcelComponent,Battery },
   directives: { waves },
   data() {
     return {
@@ -154,7 +159,8 @@ export default {
       textMap: {
         article: '导出到wordpress文章',
         category: '导出到wordpress分类',
-      }
+      },
+      Battery: 0
     }
   },
   methods: {
@@ -271,6 +277,9 @@ export default {
           })
         }
       })
+    },
+    addBattery(){
+      this.Battery += 1
     }
   }
 }
